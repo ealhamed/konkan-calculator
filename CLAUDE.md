@@ -1,4 +1,4 @@
-# كن كان Calculator (Konkan)
+# كنكان Calculator (Konkan)
 
 Standalone Konkan card-game score tracker PWA — sibling to sibeet and baloot calculators in the الديوانية suite.
 

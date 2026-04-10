@@ -1,7 +1,7 @@
 {
-  "name": "كن كان - الديوانية",
-  "short_name": "كن كان",
-  "description": "حاسبة نقاط كن كان",
+  "name": "كنكان - الديوانية",
+  "short_name": "كنكان",
+  "description": "حاسبة نقاط كنكان",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
