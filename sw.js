@@ -1,4 +1,4 @@
-const CACHE = 'konkan-v9';
+const CACHE = 'konkan-v10';
 const ASSETS = [
   './',
   './index.html',

@@ -861,6 +861,8 @@
     function buildPlayerCardHtml(i, wrapperClass) {
       var name = state.players[i];
       var isWinner = roundState.winner === i;
+      var winnerTeamIdx = (state.teamsMode && roundState.winner !== null) ? getTeamIndexForPlayer(roundState.winner) : -1;
+      var isTeammateOfWinner = !isWinner && state.teamsMode && winnerTeamIdx !== -1 && getTeamIndexForPlayer(i) === winnerTeamIdx;
       var total = state.totals[i];
       var pct = Math.min(100, Math.max(0, (total / state.target) * 100));
       var dangerCls = pct >= 200 ? ' danger' : (total < 0 ? ' negative' : '');
@@ -883,6 +885,8 @@
         '</div>';
       if (isWinner) {
         h += '<div class="player-score-winner-pts">' + toAr(winnerBonus) + '</div>';
+      } else if (isTeammateOfWinner) {
+        h += '<div class="player-score-winner-pts" style="color:#2E7D32">٠ • محمي</div>';
       } else {
         h += '<label for="pscore_' + i + '" class="sr-only">' + escHtml(name) + ' النقاط</label>' +
           '<input class="player-score-input" type="number" inputmode="numeric" pattern="[0-9]*" id="pscore_' + i + '" placeholder="عد ورق اللي فل" aria-label="' + escHtml(name) + ' النقاط" oninput="clampInput(this); updatePreviews()" min="0">' +
@@ -964,9 +968,13 @@
       var flatPenalty = roundState.ending === 'hind' ? 200 : (roundState.ending === 'super' ? 400 : 100);
       var mult = roundState.ending === 'hind' ? 2 : (roundState.ending === 'super' ? 4 : 1);
       var winnerBonus = roundState.ending === 'hind' ? -60 : (roundState.ending === 'super' ? -120 : -30);
+      var winnerTeamIdx = state.teamsMode ? getTeamIndexForPlayer(roundState.winner) : -1;
       var scores = [];
       state.players.forEach(function(name, i) {
         if (i === roundState.winner) { scores.push(winnerBonus); }
+        else if (state.teamsMode && winnerTeamIdx !== -1 && getTeamIndexForPlayer(i) === winnerTeamIdx) {
+          scores.push(0);
+        }
         else {
           var el = document.getElementById('pscore_' + i);
           var val = el ? el.value.trim() : '';
