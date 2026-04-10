@@ -317,7 +317,6 @@
     <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
       <span id="roomStatusText" style="font-size:11px;color:var(--cream);font-weight:600"></span>
       <div style="display:flex;gap:4px;align-items:center">
-        <button id="editToggleBar" style="font-size:11px;padding:8px 12px;min-height:36px;background:transparent;border:1px solid rgba(245,240,230,0.3);color:var(--cream);border-radius:10px;display:none" onclick="toggleEditFromBar()">تعديل: مقفل</button>
         <button style="font-size:11px;padding:8px 12px;min-height:36px;background:var(--burgundy);border-radius:10px" onclick="shareRoom()">مشاركة</button>
         <button style="font-size:11px;padding:8px 12px;min-height:36px;background:transparent;border:1px solid rgba(245,240,230,0.3);color:var(--cream);border-radius:10px" onclick="leaveRoom()">خروج</button>
       </div>
@@ -378,13 +377,6 @@
           <button class="btn-secondary" style="flex:1;font-size:14px;padding:10px;opacity:1;border-color:var(--navy)" onclick="copyRoomLink()">نسخ الرابط</button>
         </div>
         <div id="copyMsg" style="font-size:12px;color:var(--burgundy);text-align:center;margin-bottom:8px;opacity:0;transition:opacity 0.3s"></div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(114,47,55,0.05);border-radius:16px;margin-top:4px">
-          <span style="font-size:14px;font-weight:700;color:var(--burgundy)">السماح بالتعديل</span>
-          <label style="position:relative;width:48px;height:28px">
-            <input type="checkbox" id="editLockToggle" onchange="toggleEditLock()" style="opacity:0;width:0;height:0">
-            <span style="position:absolute;inset:0;background:#ccc;border-radius:28px;transition:0.3s;cursor:pointer"></span>
-          </label>
-        </div>
       </div>
       <div id="roomJoinView" style="display:none">
         <div style="text-align:center;font-size:13px;color:var(--navy);opacity:0.5;margin-bottom:12px">أدخل الرمز من المعزّب</div>
@@ -758,7 +750,6 @@
       document.getElementById('connectedCount').textContent = 'جاري الاتصال...';
       pushOverlay('roomModal');
       document.getElementById('roomModal').style.display = 'flex';
-      document.getElementById('editLockToggle').checked = false;
       editUnlocked = false; isHost = true; connections = [];
 
       peer = new Peer(PEER_PREFIX + roomCode.toLowerCase(), { config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] } });
@@ -875,13 +866,6 @@
       } else { copyRoomLink(); }
     }
 
-    function toggleEditLock() {
-      editUnlocked = document.getElementById('editLockToggle').checked;
-      connections.forEach(function(c) { if (c.open) c.send({ type: 'edit_lock', payload: { unlocked: editUnlocked } }); });
-      if (roomMode === 'firebase' && window.FB && roomCode && isHost) {
-        window.FB.set(window.FB.ref(window.FB.db, 'rooms/' + roomCode + '/editUnlocked'), editUnlocked).catch(function() {});
-      }
-    }
 
     function updateConnCount() {
       var count = connections.filter(function(c) { return c.open; }).length;
@@ -893,21 +877,6 @@
     function showRoomStatus(text) {
       document.getElementById('roomStatus').style.display = '';
       document.getElementById('roomStatusText').textContent = text;
-      var editBtn = document.getElementById('editToggleBar');
-      if (isHost) {
-        editBtn.style.display = '';
-        editBtn.textContent = editUnlocked ? 'تعديل: مفتوح' : 'تعديل: مقفل';
-        editBtn.style.background = editUnlocked ? 'rgba(114,47,55,0.6)' : 'transparent';
-      } else { editBtn.style.display = 'none'; }
-    }
-
-    function toggleEditFromBar() {
-      editUnlocked = !editUnlocked;
-      document.getElementById('editLockToggle').checked = editUnlocked;
-      toggleEditLock();
-      var editBtn = document.getElementById('editToggleBar');
-      editBtn.textContent = editUnlocked ? 'تعديل: مفتوح' : 'تعديل: مقفل';
-      editBtn.style.background = editUnlocked ? 'rgba(114,47,55,0.6)' : 'transparent';
     }
 
     function leaveRoom() {
@@ -938,7 +907,6 @@
       new QRCode(qrBox, { text: joinUrl, width: 160, height: 160, colorDark: isDark ? '#E8E4DC' : '#1A2744', colorLight: isDark ? '#1A1A2E' : '#F5F0E6', correctLevel: QRCode.CorrectLevel.M });
       pushOverlay('roomModal');
       document.getElementById('roomModal').style.display = 'flex';
-      document.getElementById('editLockToggle').checked = false;
       editUnlocked = false;
 
       var FB = window.FB;
