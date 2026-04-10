@@ -171,6 +171,66 @@
 
     .player-scores-section { margin-top: 12px; }
     .player-scores-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 0 4px; }
+    /* ── Teams Mode (Option 2) ── */
+    .teams-wrap { display: flex; flex-direction: column; gap: 12px; padding: 0 4px; }
+    .team-card {
+      background: white; border-radius: 14px; padding: 12px 10px;
+      border: 2px solid transparent; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .team-card.tcolor-0 { border-color: var(--burgundy); }
+    .team-card.tcolor-1 { border-color: var(--navy); }
+    .team-card.tcolor-2 { border-color: var(--gold-text); }
+    .team-card.tcolor-3 { border-color: #2E7D32; }
+    .team-card.tcolor-4 { border-color: #6A1B9A; }
+    .team-header {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px dashed rgba(0,0,0,0.12);
+    }
+    .team-name { font-size: 13px; font-weight: 800; color: var(--navy); }
+    .team-card.tcolor-0 .team-name { color: var(--burgundy); }
+    .team-card.tcolor-1 .team-name { color: var(--navy); }
+    .team-card.tcolor-2 .team-name { color: var(--gold-text); }
+    .team-card.tcolor-3 .team-name { color: #2E7D32; }
+    .team-card.tcolor-4 .team-name { color: #6A1B9A; }
+    .team-total { font-size: 28px; font-weight: 900; color: var(--navy); line-height: 1; }
+    .team-bar { height: 5px; border-radius: 3px; background: rgba(0,0,0,0.06); overflow: hidden; margin: 6px 0 10px; }
+    .team-bar-fill { height: 100%; background: var(--burgundy); transition: width 0.3s; }
+    .team-card.tcolor-1 .team-bar-fill { background: var(--navy); }
+    .team-card.tcolor-2 .team-bar-fill { background: var(--gold); }
+    .team-card.tcolor-3 .team-bar-fill { background: #2E7D32; }
+    .team-card.tcolor-4 .team-bar-fill { background: #6A1B9A; }
+    .team-players { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .team-player {
+      background: rgba(26,39,68,0.03); border-radius: 10px; padding: 8px 6px;
+      text-align: center;
+    }
+    .team-player.is-winner { background: rgba(201,162,39,0.15); box-shadow: 0 0 0 1.5px var(--gold); }
+    .team-player .player-score-name { font-size: 12px; }
+    .team-player .player-score-total { font-size: 17px; margin: 2px 0 4px; }
+    /* Team assignment modal */
+    .team-assign-players { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; padding: 8px 0 16px; }
+    .player-chip {
+      padding: 10px 16px; background: rgba(26,39,68,0.08); border: 2px solid transparent;
+      border-radius: 999px; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 14px;
+      color: var(--navy); cursor: pointer; min-height: 40px;
+    }
+    .player-chip.selected { border-color: var(--gold); background: rgba(201,162,39,0.2); }
+    .player-chip.paired { opacity: 0.35; pointer-events: none; }
+    .pair-preview {
+      display: flex; flex-direction: column; gap: 6px; padding: 8px 0;
+    }
+    .pair-preview-row {
+      display: flex; justify-content: center; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 700;
+    }
+    .pair-preview-row .pair-dot {
+      display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+    }
+    [data-theme="dark"] .team-card { background: rgba(245,240,230,0.06); }
+    [data-theme="dark"] .team-player { background: rgba(245,240,230,0.04); }
+    [data-theme="dark"] .team-total { color: var(--cream); }
+    [data-theme="dark"] .team-header { border-bottom-color: rgba(245,240,230,0.12); }
+    [data-theme="dark"] .player-chip { background: rgba(245,240,230,0.08); color: var(--cream); }
     .target-row {
       display: flex; align-items: center; justify-content: center; gap: 8px;
       padding: 4px 0 12px; flex-wrap: wrap;
@@ -389,6 +449,14 @@
         <span>لعبة جديدة</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
       </button>
+      <button class="menu-item" onclick="closeMenu();toggleTeamsMode()">
+        <span id="teamsModeLabel">وضع الفرق</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </button>
+      <button class="menu-item" id="editTeamsMenuBtn" onclick="closeMenu();openTeamAssign()" style="display:none">
+        <span>تعديل الفرق</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button>
       <button class="menu-item" onclick="toggleTheme()">
         <span id="themeName">الوضع الداكن</span>
         <span id="themeLabel"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
@@ -461,6 +529,23 @@
   <!-- Game Over -->
   <div id="gameOverOverlay" style="display:none"></div>
 
+  <!-- Team Assignment Modal -->
+  <div class="modal-overlay" id="teamAssignModal" style="position:fixed;inset:0;background:rgba(26,39,68,0.5);z-index:150;display:none;align-items:flex-end;justify-content:center">
+    <div style="background:var(--bg);border-radius:24px 24px 0 0;width:100%;max-width:430px;padding:24px 20px env(safe-area-inset-bottom,20px);max-height:90vh;overflow-y:auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span style="color:var(--navy);font-size:20px;font-weight:800">تكوين الفرق</span>
+        <button class="modal-close" onclick="closeTeamAssign()" aria-label="إغلاق"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <p style="color:var(--navy);opacity:0.7;font-size:13px;margin:0 0 12px">اختر لاعبين في كل مرة لتكوين فريق.</p>
+      <div class="team-assign-players" id="teamAssignChips"></div>
+      <div class="pair-preview" id="teamAssignPairs"></div>
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button class="btn-secondary" onclick="resetTeamAssign()" style="flex:1">إعادة تعيين</button>
+        <button class="btn-primary" id="teamAssignConfirmBtn" onclick="confirmTeamAssign()" style="flex:1" disabled>تأكيد</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js" integrity="sha384-nlUQ8ZqCbvStErob+biJNzSgltf6urV3VGqhfIfzhmg9RXmpeRm76ELw0pYnKlTR" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU" crossorigin="anonymous"></script>
   <script type="module">
@@ -484,7 +569,7 @@
     var state = loadState();
 
     function defaultState() {
-      return { players: ['لاعب ١', 'لاعب ٢', 'لاعب ٣', 'لاعب ٤'], rounds: [], totals: [0, 0, 0, 0], target: 1000, started: true };
+      return { players: ['لاعب ١', 'لاعب ٢', 'لاعب ٣', 'لاعب ٤'], rounds: [], totals: [0, 0, 0, 0], target: 1000, started: true, teamsMode: false, teams: [] };
     }
 
     function loadState() {
@@ -495,7 +580,8 @@
         return {
           players: s.players || d.players, rounds: s.rounds || d.rounds,
           totals: s.totals || (s.players || d.players).map(function() { return 0; }),
-          target: s.target || 1000, started: s.started || false
+          target: s.target || 1000, started: s.started || false,
+          teamsMode: !!s.teamsMode, teams: Array.isArray(s.teams) ? s.teams : []
         };
       } catch(e) { return defaultState(); }
     }
@@ -564,6 +650,8 @@
         document.getElementById('sideMenu').classList.remove('open');
         return;
       }
+      var teamModal = document.getElementById('teamAssignModal');
+      if (teamModal && teamModal.style.display === 'flex') { teamModal.style.display = 'none'; return; }
       var dlg = document.querySelector('.app-dialog-overlay');
       if (dlg) { dlg.remove(); }
     });
@@ -579,11 +667,15 @@
     }
 
     // ── Setup Screen ──
-    function addPlayerMidGame() {
+    async function addPlayerMidGame() {
       if (state.players.length >= 20) return;
+      if (state.teamsMode) {
+        if (!(await appConfirm('إضافة لاعب ستُلغي وضع الفرق الحالي. متابعة؟'))) return;
+        state.teamsMode = false; state.teams = [];
+        updateTeamsMenuLabel();
+      }
       state.players.push('لاعب ' + (state.players.length + 1));
       state.totals.push(0);
-      // pad existing rounds with 0 score for the new player
       state.rounds.forEach(function(r) { r.scores.push(0); });
       saveState(); render(); broadcastState();
     }
@@ -592,6 +684,7 @@
       if (state.players.length <= 2) return;
       var name = state.players[idx];
       if (!(await appConfirm('حذف ' + name + '؟'))) return;
+      if (state.teamsMode) { state.teamsMode = false; state.teams = []; updateTeamsMenuLabel(); }
       state.players.splice(idx, 1);
       state.totals.splice(idx, 1);
       state.rounds.forEach(function(r) {
@@ -602,6 +695,111 @@
       if (roundState.winner === idx) { roundState.winner = null; roundState.ending = null; }
       else if (roundState.winner !== null && roundState.winner > idx) roundState.winner -= 1;
       saveState(); render(); broadcastState();
+    }
+
+    // ── Teams Mode ──
+    function updateTeamsMenuLabel() {
+      var label = document.getElementById('teamsModeLabel');
+      var editBtn = document.getElementById('editTeamsMenuBtn');
+      if (label) label.textContent = state.teamsMode ? 'إيقاف وضع الفرق' : 'وضع الفرق';
+      if (editBtn) editBtn.style.display = state.teamsMode ? '' : 'none';
+    }
+
+    async function toggleTeamsMode() {
+      if (state.teamsMode) {
+        state.teamsMode = false; state.teams = [];
+        updateTeamsMenuLabel(); saveState(); render(); broadcastState();
+        return;
+      }
+      if (state.players.length % 2 !== 0) {
+        await appConfirm('وضع الفرق يحتاج عدد لاعبين زوجي. عدد اللاعبين حالياً ' + toAr(state.players.length) + '.');
+        return;
+      }
+      if (state.players.length < 4) {
+        await appConfirm('وضع الفرق يحتاج ٤ لاعبين على الأقل.');
+        return;
+      }
+      openTeamAssign();
+    }
+
+    var teamAssignState = { picks: [], pairs: [] };
+
+    function openTeamAssign() {
+      teamAssignState = { picks: [], pairs: [] };
+      pushOverlay('teamAssignModal');
+      document.getElementById('teamAssignModal').style.display = 'flex';
+      renderTeamAssign();
+    }
+
+    function closeTeamAssign() {
+      if (history.state && history.state.overlay === 'teamAssignModal') { history.back(); return; }
+      document.getElementById('teamAssignModal').style.display = 'none';
+    }
+
+    function renderTeamAssign() {
+      var chipsEl = document.getElementById('teamAssignChips');
+      var pairsEl = document.getElementById('teamAssignPairs');
+      var confirmBtn = document.getElementById('teamAssignConfirmBtn');
+      var pairedSet = {};
+      teamAssignState.pairs.forEach(function(p) { pairedSet[p[0]] = true; pairedSet[p[1]] = true; });
+      var chips = '';
+      state.players.forEach(function(name, i) {
+        var cls = 'player-chip';
+        if (pairedSet[i]) cls += ' paired';
+        else if (teamAssignState.picks.indexOf(i) !== -1) cls += ' selected';
+        chips += '<button class="' + cls + '" onclick="pickTeamPlayer(' + i + ')">' + escHtml(name) + '</button>';
+      });
+      chipsEl.innerHTML = chips;
+      var colors = ['var(--burgundy)', 'var(--navy)', 'var(--gold-text)', '#2E7D32', '#6A1B9A'];
+      var ph = '';
+      teamAssignState.pairs.forEach(function(pair, i) {
+        ph += '<div class="pair-preview-row"><span class="pair-dot" style="background:' + colors[i % colors.length] + '"></span>' +
+          '<span>فريق ' + toAr(i + 1) + ':</span>' +
+          '<span>' + escHtml(state.players[pair[0]]) + ' و' + escHtml(state.players[pair[1]]) + '</span></div>';
+      });
+      pairsEl.innerHTML = ph;
+      var needPairs = state.players.length / 2;
+      confirmBtn.disabled = teamAssignState.pairs.length !== needPairs;
+    }
+
+    function pickTeamPlayer(i) {
+      var picks = teamAssignState.picks;
+      var idx = picks.indexOf(i);
+      if (idx !== -1) { picks.splice(idx, 1); renderTeamAssign(); return; }
+      picks.push(i);
+      if (picks.length === 2) {
+        teamAssignState.pairs.push(picks.slice());
+        teamAssignState.picks = [];
+      }
+      renderTeamAssign();
+    }
+
+    function resetTeamAssign() {
+      teamAssignState = { picks: [], pairs: [] };
+      renderTeamAssign();
+    }
+
+    function confirmTeamAssign() {
+      if (teamAssignState.pairs.length !== state.players.length / 2) return;
+      state.teamsMode = true;
+      state.teams = teamAssignState.pairs.slice();
+      updateTeamsMenuLabel();
+      closeTeamAssign();
+      saveState(); render(); broadcastState();
+      if (typeof navigator.vibrate === 'function') navigator.vibrate(20);
+    }
+
+    function getTeamIndexForPlayer(playerIdx) {
+      for (var i = 0; i < state.teams.length; i++) {
+        if (state.teams[i].indexOf(playerIdx) !== -1) return i;
+      }
+      return -1;
+    }
+
+    function getTeamTotal(teamIdx) {
+      var sum = 0;
+      state.teams[teamIdx].forEach(function(p) { sum += state.totals[p]; });
+      return sum;
     }
     // ── Game Actions ──
     async function confirmNewGame() {
@@ -626,7 +824,7 @@
     // ── Render ──
     function render() {
       if (!state.started) { state.started = true; state.totals = state.players.map(function() { return 0; }); saveState(); }
-      renderTargetRow(); renderRoundInput(); renderHistory(); checkGameOver();
+      renderTargetRow(); renderRoundInput(); renderHistory(); checkGameOver(); updateTeamsMenuLabel();
     }
 
     var TARGET_PRESETS = [500, 1000, 1500, 2000];
@@ -660,42 +858,67 @@
       setTarget(n);
     }
 
-    function renderRoundInput() {
-      var shtml = '<div class="player-scores-grid">';
+    function buildPlayerCardHtml(i, wrapperClass) {
+      var name = state.players[i];
+      var isWinner = roundState.winner === i;
+      var total = state.totals[i];
+      var pct = Math.min(100, Math.max(0, (total / state.target) * 100));
+      var dangerCls = pct >= 200 ? ' danger' : (total < 0 ? ' negative' : '');
       var winnerBonus = roundState.ending === 'hind' ? -60 : (roundState.ending === 'ful' ? -30 : (roundState.ending === 'super' ? -120 : 0));
-      var canRemove = state.players.length > 2;
-      state.players.forEach(function(name, i) {
-        var isWinner = roundState.winner === i;
-        var total = state.totals[i];
-        var pct = Math.min(100, Math.max(0, (total / state.target) * 100));
-        var dangerCls = pct >= 200 ? ' danger' : (total < 0 ? ' negative' : '');
-        shtml += '<div class="player-score-card' + (isWinner ? ' is-winner' : '') + dangerCls + '">';
-        var removeBtn = canRemove ? '<button class="card-remove-btn" onclick="event.stopPropagation();removePlayerMidGame(' + i + ')" aria-label="حذف اللاعب"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' : '';
-        shtml += '<div class="player-score-name-wrap">' + removeBtn + '<div class="player-score-name" onclick="renamePlayer(' + i + ')">' + escHtml(name) + '</div></div>';
-        shtml += '<div class="player-score-total">' + toAr(total) + '</div>';
-        shtml += '<div class="player-score-bar"><div class="player-score-bar-fill" style="width:' + pct + '%"></div></div>';
-        // ending toggles inside each card
-        var hindSel = (isWinner && roundState.ending === 'hind') ? ' selected' : '';
-        var fulSel = (isWinner && roundState.ending === 'ful') ? ' selected' : '';
-        var superSel = (isWinner && roundState.ending === 'super') ? ' selected' : '';
-        shtml += '<div class="ending-toggles">' +
-          '<button class="ending-toggle super' + superSel + '" onclick="selectWinnerEnding(' + i + ', \'super\')">سوبر</button>' +
-          '<button class="ending-toggle hind' + hindSel + '" onclick="selectWinnerEnding(' + i + ', \'hind\')">هند</button>' +
-          '<button class="ending-toggle ful' + fulSel + '" onclick="selectWinnerEnding(' + i + ', \'ful\')">خالص</button>' +
-          '</div>';
-        if (isWinner) {
-          shtml += '<div class="player-score-winner-pts">' + toAr(winnerBonus) + '</div>';
-        } else {
-          shtml += '<label for="pscore_' + i + '" class="sr-only">' + escHtml(name) + ' النقاط</label>' +
-            '<input class="player-score-input" type="number" inputmode="numeric" pattern="[0-9]*" id="pscore_' + i + '" placeholder="عد ورق اللي فل" aria-label="' + escHtml(name) + ' النقاط" oninput="clampInput(this); updatePreviews()" min="0">' +
-            '<div class="player-score-preview" id="preview_' + i + '"></div>';
-        }
+      var canRemove = !state.teamsMode && state.players.length > 2;
+      var h = '<div class="' + (wrapperClass || 'player-score-card') + (isWinner ? ' is-winner' : '') + dangerCls + '">';
+      var removeBtn = canRemove ? '<button class="card-remove-btn" onclick="event.stopPropagation();removePlayerMidGame(' + i + ')" aria-label="حذف اللاعب"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' : '';
+      h += '<div class="player-score-name-wrap">' + removeBtn + '<div class="player-score-name" onclick="renamePlayer(' + i + ')">' + escHtml(name) + '</div></div>';
+      h += '<div class="player-score-total">' + toAr(total) + '</div>';
+      if (!state.teamsMode) {
+        h += '<div class="player-score-bar"><div class="player-score-bar-fill" style="width:' + pct + '%"></div></div>';
+      }
+      var hindSel = (isWinner && roundState.ending === 'hind') ? ' selected' : '';
+      var fulSel = (isWinner && roundState.ending === 'ful') ? ' selected' : '';
+      var superSel = (isWinner && roundState.ending === 'super') ? ' selected' : '';
+      h += '<div class="ending-toggles">' +
+        '<button class="ending-toggle super' + superSel + '" onclick="selectWinnerEnding(' + i + ', \'super\')">سوبر</button>' +
+        '<button class="ending-toggle hind' + hindSel + '" onclick="selectWinnerEnding(' + i + ', \'hind\')">هند</button>' +
+        '<button class="ending-toggle ful' + fulSel + '" onclick="selectWinnerEnding(' + i + ', \'ful\')">خالص</button>' +
+        '</div>';
+      if (isWinner) {
+        h += '<div class="player-score-winner-pts">' + toAr(winnerBonus) + '</div>';
+      } else {
+        h += '<label for="pscore_' + i + '" class="sr-only">' + escHtml(name) + ' النقاط</label>' +
+          '<input class="player-score-input" type="number" inputmode="numeric" pattern="[0-9]*" id="pscore_' + i + '" placeholder="عد ورق اللي فل" aria-label="' + escHtml(name) + ' النقاط" oninput="clampInput(this); updatePreviews()" min="0">' +
+          '<div class="player-score-preview" id="preview_' + i + '"></div>';
+      }
+      h += '</div>';
+      return h;
+    }
+
+    function renderRoundInput() {
+      var shtml = '';
+      if (state.teamsMode && state.teams.length > 0) {
+        shtml += '<div class="teams-wrap">';
+        state.teams.forEach(function(pair, ti) {
+          var teamTotal = getTeamTotal(ti);
+          var pct = Math.min(100, Math.max(0, (teamTotal / state.target) * 100));
+          var teamName = pair.map(function(p) { return state.players[p]; }).join(' و');
+          shtml += '<div class="team-card tcolor-' + (ti % 5) + '">' +
+            '<div class="team-header"><div class="team-name">فريق ' + toAr(ti + 1) + ' — ' + escHtml(teamName) + '</div>' +
+            '<div class="team-total">' + toAr(teamTotal) + '</div></div>' +
+            '<div class="team-bar"><div class="team-bar-fill" style="width:' + pct + '%"></div></div>' +
+            '<div class="team-players">';
+          pair.forEach(function(pi) {
+            shtml += buildPlayerCardHtml(pi, 'team-player');
+          });
+          shtml += '</div></div>';
+        });
         shtml += '</div>';
-      });
-      shtml += '</div>';
+      } else {
+        shtml += '<div class="player-scores-grid">';
+        state.players.forEach(function(name, i) { shtml += buildPlayerCardHtml(i); });
+        shtml += '</div>';
+      }
       document.getElementById('playerScores').innerHTML = shtml;
       var addBtn = document.getElementById('addPlayerMidGameBtn');
-      if (addBtn) addBtn.style.display = state.players.length >= 20 ? 'none' : '';
+      if (addBtn) addBtn.style.display = (state.teamsMode || state.players.length >= 20) ? 'none' : '';
       updatePreviews(); updateSubmitBtn();
     }
 
@@ -776,19 +999,36 @@
     }
 
     function checkGameOver() {
+      var overlay = document.getElementById('gameOverOverlay');
+      var html = '';
+      var medals = ['🥇', '🥈', '🥉'];
+      if (state.teamsMode && state.teams.length > 0) {
+        var anyLoser = state.teams.some(function(_, ti) { return getTeamTotal(ti) >= state.target; });
+        if (!anyLoser) { overlay.style.display = 'none'; return; }
+        var ranked = state.teams.map(function(pair, ti) {
+          return { name: 'فريق ' + toAr(ti + 1) + ' — ' + pair.map(function(p) { return state.players[p]; }).join(' و'), total: getTeamTotal(ti) };
+        }).sort(function(a, b) { return a.total - b.total; });
+        html = '<div class="game-over-overlay"><h2>انتهت اللعبة!</h2><ul class="ranking-list">';
+        ranked.forEach(function(p, i) {
+          var medal = medals[i] || '';
+          html += '<li>' + (medal ? '<span class="ranking-medal">' + medal + '</span>' : '') +
+            '<span>' + escHtml(p.name) + '</span><span style="opacity:0.6;margin-right:8px;font-size:14px">' + toAr(p.total) + '</span></li>';
+        });
+        html += '</ul><button onclick="confirmNewGame()" style="margin-bottom:8px">لعبة جديدة</button></div>';
+        overlay.style.display = ''; overlay.innerHTML = html;
+        return;
+      }
       var loser = -1;
       state.totals.forEach(function(t, i) { if (t >= state.target) loser = i; });
-      if (loser === -1) return;
+      if (loser === -1) { overlay.style.display = 'none'; return; }
       var ranked = state.players.map(function(name, i) { return { name: name, total: state.totals[i] }; }).sort(function(a, b) { return a.total - b.total; });
-      var medals = ['🥇', '🥈', '🥉'];
-      var html = '<div class="game-over-overlay"><h2>انتهت اللعبة!</h2><ul class="ranking-list">';
+      html = '<div class="game-over-overlay"><h2>انتهت اللعبة!</h2><ul class="ranking-list">';
       ranked.forEach(function(p, i) {
         var medal = medals[i] || '';
         html += '<li>' + (medal ? '<span class="ranking-medal">' + medal + '</span>' : '') +
           '<span>' + escHtml(p.name) + '</span><span style="opacity:0.6;margin-right:8px;font-size:14px">' + toAr(p.total) + '</span></li>';
       });
       html += '</ul><button onclick="confirmNewGame()" style="margin-bottom:8px">لعبة جديدة</button></div>';
-      var overlay = document.getElementById('gameOverOverlay');
       overlay.style.display = ''; overlay.innerHTML = html;
     }
 
@@ -1057,11 +1297,13 @@
       fbUnsubState = function() { /* detach onValue not needed for brief session */ };
     }
 
-    function getStatePayload() { return { players: state.players, rounds: state.rounds, totals: state.totals, target: state.target }; }
+    function getStatePayload() { return { players: state.players, rounds: state.rounds, totals: state.totals, target: state.target, teamsMode: state.teamsMode, teams: state.teams }; }
 
     function applyStatePayload(payload) {
       state.players = payload.players; state.rounds = payload.rounds;
       state.totals = payload.totals; state.target = payload.target;
+      state.teamsMode = !!payload.teamsMode;
+      state.teams = Array.isArray(payload.teams) ? payload.teams : [];
       state.started = true; saveState();
     }
 
