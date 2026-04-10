@@ -215,15 +215,22 @@
     .player-score-bar-fill { height: 100%; background: var(--navy); border-radius: 2px; transition: width 0.4s ease; }
     .player-score-card.danger .player-score-bar-fill { background: var(--burgundy); }
     .player-score-input {
-      width: 100%; border: 1.5px solid rgba(26,39,68,0.15); border-radius: 8px;
-      padding: 8px 10px; font-family: 'Cairo', sans-serif; font-size: 16px;
-      font-weight: 700; color: var(--navy); text-align: center; background: white;
+      width: 100%; border: 1.5px dashed rgba(114,47,55,0.35); border-radius: 10px;
+      padding: 10px 8px; font-family: 'Cairo', sans-serif; font-size: 16px;
+      font-weight: 700; color: var(--navy); text-align: center;
+      background: rgba(114,47,55,0.04);
       outline: none; margin-bottom: 2px;
       -moz-appearance: textfield;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .player-score-input::placeholder {
+      color: var(--burgundy); opacity: 0.4; font-size: 12px; font-weight: 600;
     }
     .player-score-input::-webkit-outer-spin-button,
     .player-score-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    .player-score-input:focus { border-color: var(--burgundy); }
+    .player-score-input:focus {
+      border-color: var(--burgundy); border-style: solid; background: white;
+    }
     .player-score-badge { font-size: 11px; font-weight: 700; color: var(--gold-text); opacity: 0.7; }
     .player-score-winner-pts { font-size: 18px; font-weight: 700; color: var(--gold-text); }
     .player-score-preview { font-size: 11px; font-weight: 600; color: var(--burgundy); opacity: 0.7; }
@@ -301,7 +308,9 @@
     [data-theme="dark"] .player-score-name { color: var(--gold); }
     [data-theme="dark"] .player-score-total { color: var(--cream); }
     [data-theme="dark"] .player-score-card.negative .player-score-total { color: #66BB6A; }
-    [data-theme="dark"] .player-score-input { background: rgba(245,240,230,0.06); border-color: rgba(245,240,230,0.1); color: var(--cream); }
+    [data-theme="dark"] .player-score-input { background: rgba(201,162,39,0.08); border-color: rgba(201,162,39,0.4); color: var(--cream); }
+    [data-theme="dark"] .player-score-input::placeholder { color: var(--gold); opacity: 0.5; }
+    [data-theme="dark"] .player-score-input:focus { background: rgba(245,240,230,0.1); border-color: var(--gold); }
     [data-theme="dark"] .round-row { background: rgba(245,240,230,0.04); }
     [data-theme="dark"] .round-score-cell { color: var(--cream); }
     [data-theme="dark"] .player-setup-row { background: rgba(245,240,230,0.06); }
@@ -621,7 +630,7 @@
           shtml += '<div class="player-score-winner-pts">' + toAr(winnerBonus) + '</div>';
         } else {
           shtml += '<label for="pscore_' + i + '" class="sr-only">' + escHtml(name) + ' النقاط</label>' +
-            '<input class="player-score-input" type="number" inputmode="numeric" pattern="[0-9]*" id="pscore_' + i + '" placeholder="—" aria-label="' + escHtml(name) + ' النقاط" oninput="clampInput(this); updatePreviews()" min="0">' +
+            '<input class="player-score-input" type="number" inputmode="numeric" pattern="[0-9]*" id="pscore_' + i + '" placeholder="عد ورق اللي فل" aria-label="' + escHtml(name) + ' النقاط" oninput="clampInput(this); updatePreviews()" min="0">' +
             '<div class="player-score-preview" id="preview_' + i + '"></div>';
         }
         shtml += '</div>';
