@@ -613,9 +613,9 @@
         var fulSel = (isWinner && roundState.ending === 'ful') ? ' selected' : '';
         var superSel = (isWinner && roundState.ending === 'super') ? ' selected' : '';
         shtml += '<div class="ending-toggles">' +
+          '<button class="ending-toggle super' + superSel + '" onclick="selectWinnerEnding(' + i + ', \'super\')">سوبر</button>' +
           '<button class="ending-toggle hind' + hindSel + '" onclick="selectWinnerEnding(' + i + ', \'hind\')">هند</button>' +
           '<button class="ending-toggle ful' + fulSel + '" onclick="selectWinnerEnding(' + i + ', \'ful\')">خالص</button>' +
-          '<button class="ending-toggle super' + superSel + '" onclick="selectWinnerEnding(' + i + ', \'super\')">سوبر</button>' +
           '</div>';
         if (isWinner) {
           shtml += '<div class="player-score-winner-pts">' + toAr(winnerBonus) + '</div>';
