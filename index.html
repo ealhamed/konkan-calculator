@@ -188,7 +188,7 @@
     .card-remove-btn svg { width: 12px; height: 12px; }
     .card-remove-btn:active { opacity: 1; }
     .player-score-total { font-size: 22px; font-weight: 700; color: var(--navy); line-height: 1.1; margin-bottom: 2px; }
-    .ending-toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 4px; }
+    .ending-toggles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-bottom: 4px; }
     .ending-toggle {
       height: 36px; border-radius: 8px; border: 1.5px solid rgba(26,39,68,0.12);
       background: white; color: var(--navy); cursor: pointer; transition: all 0.15s;
@@ -204,6 +204,10 @@
     .ending-toggle.ful.selected {
       background: var(--gold); border-color: var(--gold); color: var(--navy);
       box-shadow: 0 2px 8px rgba(201,162,39,0.3);
+    }
+    .ending-toggle.super.selected {
+      background: var(--navy); border-color: var(--navy); color: var(--cream);
+      box-shadow: 0 2px 8px rgba(26,39,68,0.35);
     }
     .player-score-card.danger .player-score-total { color: var(--burgundy); }
     .player-score-card.negative .player-score-total { color: #2E7D32; }
@@ -246,6 +250,7 @@
     .round-type-badge { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px; min-width: 30px; text-align: center; }
     .round-type-badge.hind { background: rgba(114,47,55,0.12); color: var(--burgundy); }
     .round-type-badge.ful { background: rgba(201,162,39,0.15); color: var(--gold-text); }
+    .round-type-badge.super { background: rgba(26,39,68,0.15); color: var(--navy); }
     .round-scores { display: flex; flex: 1; gap: 2px; justify-content: space-around; }
     .round-score-cell { flex: 1; text-align: center; font-weight: 600; color: var(--navy); }
     .round-score-cell.winner { color: var(--gold-text); }
@@ -591,7 +596,7 @@
 
     function renderRoundInput() {
       var shtml = '<div class="player-scores-grid">';
-      var winnerBonus = roundState.ending === 'hind' ? -60 : (roundState.ending === 'ful' ? -30 : 0);
+      var winnerBonus = roundState.ending === 'hind' ? -60 : (roundState.ending === 'ful' ? -30 : (roundState.ending === 'super' ? -120 : 0));
       var canRemove = state.players.length > 2;
       state.players.forEach(function(name, i) {
         var isWinner = roundState.winner === i;
@@ -606,9 +611,11 @@
         // ending toggles inside each card
         var hindSel = (isWinner && roundState.ending === 'hind') ? ' selected' : '';
         var fulSel = (isWinner && roundState.ending === 'ful') ? ' selected' : '';
+        var superSel = (isWinner && roundState.ending === 'super') ? ' selected' : '';
         shtml += '<div class="ending-toggles">' +
           '<button class="ending-toggle hind' + hindSel + '" onclick="selectWinnerEnding(' + i + ', \'hind\')">هند</button>' +
-          '<button class="ending-toggle ful' + fulSel + '" onclick="selectWinnerEnding(' + i + ', \'ful\')">فل</button>' +
+          '<button class="ending-toggle ful' + fulSel + '" onclick="selectWinnerEnding(' + i + ', \'ful\')">خالص</button>' +
+          '<button class="ending-toggle super' + superSel + '" onclick="selectWinnerEnding(' + i + ', \'super\')">سوبر</button>' +
           '</div>';
         if (isWinner) {
           shtml += '<div class="player-score-winner-pts">' + toAr(winnerBonus) + '</div>';
@@ -640,8 +647,8 @@
 
     function updatePreviews() {
       if (!roundState.ending) return;
-      var flatPenalty = roundState.ending === 'hind' ? 200 : 100;
-      var mult = roundState.ending === 'hind' ? 2 : 1;
+      var flatPenalty = roundState.ending === 'hind' ? 200 : (roundState.ending === 'super' ? 400 : 100);
+      var mult = roundState.ending === 'hind' ? 2 : (roundState.ending === 'super' ? 4 : 1);
       state.players.forEach(function(name, i) {
         if (roundState.winner === i) return;
         var el = document.getElementById('pscore_' + i);
@@ -653,7 +660,7 @@
           prev.style.opacity = '0.5';
         } else {
           var pts = parseInt(val) * mult;
-          prev.innerHTML = '+' + toAr(pts) + (mult > 1 ? ' (×٢)' : '');
+          prev.innerHTML = '+' + toAr(pts) + (mult > 1 ? ' (×' + toAr(mult) + ')' : '');
           prev.style.opacity = '0.7';
         }
       });
@@ -665,9 +672,9 @@
 
     function submitRound() {
       if (!roundState.ending || roundState.winner === null) return;
-      var flatPenalty = roundState.ending === 'hind' ? 200 : 100;
-      var mult = roundState.ending === 'hind' ? 2 : 1;
-      var winnerBonus = roundState.ending === 'hind' ? -60 : -30;
+      var flatPenalty = roundState.ending === 'hind' ? 200 : (roundState.ending === 'super' ? 400 : 100);
+      var mult = roundState.ending === 'hind' ? 2 : (roundState.ending === 'super' ? 4 : 1);
+      var winnerBonus = roundState.ending === 'hind' ? -60 : (roundState.ending === 'super' ? -120 : -30);
       var scores = [];
       state.players.forEach(function(name, i) {
         if (i === roundState.winner) { scores.push(winnerBonus); }
@@ -690,7 +697,7 @@
       state.rounds.forEach(function(round, ri) {
         var maxScore = Math.max.apply(null, round.scores);
         html += '<div class="round-row"><span class="round-num">' + toAr(ri + 1) + '</span>' +
-          '<span class="round-type-badge ' + round.ending + '">' + (round.ending === 'hind' ? 'هند' : 'فل') + '</span><div class="round-scores">';
+          '<span class="round-type-badge ' + round.ending + '">' + (round.ending === 'hind' ? 'هند' : (round.ending === 'super' ? 'سوبر' : 'خالص')) + '</span><div class="round-scores">';
         round.scores.forEach(function(s, si) {
           var cls = '';
           if (si === round.winner) cls = ' winner';
