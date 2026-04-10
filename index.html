@@ -409,15 +409,8 @@
     </div>
 
     <!-- Setup Screen -->
-    <div id="setupScreen" class="setup-section">
-      <div class="setup-title">اللاعبين</div>
-      <div class="player-setup-list" id="playerSetupList"></div>
-      <button class="add-player-btn" id="addPlayerBtn" onclick="addPlayer()">+ إضافة لاعب</button>
-      <button class="start-btn" onclick="startGame()">ابدأ اللعبة</button>
-    </div>
-
     <!-- Game Screen -->
-    <div id="gameScreen" style="display:none">
+    <div id="gameScreen">
       <div class="round-input">
         <div class="player-scores-section" id="playerScores"></div>
         <button class="add-player-btn" id="addPlayerMidGameBtn" onclick="addPlayerMidGame()" style="margin: 8px 0 0">+ إضافة لاعب</button>
@@ -457,7 +450,7 @@
     var state = loadState();
 
     function defaultState() {
-      return { players: ['لاعب ١', 'لاعب ٢', 'لاعب ٣', 'لاعب ٤'], rounds: [], totals: [], target: 1000, started: false };
+      return { players: ['لاعب ١', 'لاعب ٢', 'لاعب ٣', 'لاعب ٤'], rounds: [], totals: [0, 0, 0, 0], target: 1000, started: true };
     }
 
     function loadState() {
@@ -552,21 +545,6 @@
     }
 
     // ── Setup Screen ──
-    function renderSetup() {
-      var list = document.getElementById('playerSetupList');
-      var html = '';
-      state.players.forEach(function(name, i) {
-        html += '<div class="player-setup-row"><div class="player-setup-num">' + (i + 1) + '</div>' +
-          '<input class="player-setup-input" value="' + escHtml(name) + '" onchange="renameSetupPlayer(' + i + ', this.value)" placeholder="لاعب ' + (i + 1) + '">' +
-          (state.players.length > 2 ? '<button class="player-setup-remove" onclick="removePlayer(' + i + ')" aria-label="حذف لاعب"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' : '') +
-          '</div>';
-      });
-      list.innerHTML = html;
-      document.getElementById('addPlayerBtn').style.display = state.players.length >= 20 ? 'none' : '';
-    }
-
-    function addPlayer() { if (state.players.length >= 20) return; state.players.push('لاعب ' + (state.players.length + 1)); saveState(); renderSetup(); }
-
     function addPlayerMidGame() {
       if (state.players.length >= 20) return;
       state.players.push('لاعب ' + (state.players.length + 1));
@@ -591,14 +569,6 @@
       else if (roundState.winner !== null && roundState.winner > idx) roundState.winner -= 1;
       saveState(); render(); broadcastState();
     }
-    function removePlayer(i) { if (state.players.length <= 2) return; state.players.splice(i, 1); saveState(); renderSetup(); }
-    function renameSetupPlayer(i, name) { state.players[i] = name.trim() || ('لاعب ' + (i + 1)); saveState(); }
-    function startGame() {
-      if (state.players.length < 2) return;
-      state.started = true; state.totals = state.players.map(function() { return 0; }); state.rounds = [];
-      saveState(); render();
-    }
-
     // ── Game Actions ──
     async function confirmNewGame() {
       closeMenu();
@@ -621,10 +591,7 @@
 
     // ── Render ──
     function render() {
-      var setupEl = document.getElementById('setupScreen');
-      var gameEl = document.getElementById('gameScreen');
-      if (!state.started) { setupEl.style.display = ''; gameEl.style.display = 'none'; renderSetup(); return; }
-      setupEl.style.display = 'none'; gameEl.style.display = '';
+      if (!state.started) { state.started = true; state.totals = state.players.map(function() { return 0; }); saveState(); }
       renderRoundInput(); renderHistory(); checkGameOver();
     }
 
