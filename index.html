@@ -1080,6 +1080,7 @@
       pushOverlay('roomModal');
       document.getElementById('roomModal').style.display = 'flex';
       editUnlocked = false; isHost = true; connections = [];
+      showRoomStatus('غرفة ' + roomCode + ' • جاري الاتصال...');
 
       peer = new Peer(PEER_PREFIX + roomCode.toLowerCase(), { config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] } });
       peer.on('open', function() { document.getElementById('connectedCount').textContent = 'جاهز • ٠ متصلين'; showRoomStatus('غرفة ' + roomCode + ' • معزّب • ٠ متصلين'); });
@@ -1270,6 +1271,7 @@
       pushOverlay('roomModal');
       document.getElementById('roomModal').style.display = 'flex';
       editUnlocked = false;
+      showRoomStatus('غرفة F-' + roomCode + ' • جاري الاتصال...');
 
       var FB = window.FB;
       var roomRef = FB.ref(FB.db, 'rooms/' + roomCode);
