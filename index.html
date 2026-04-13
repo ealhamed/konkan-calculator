@@ -237,6 +237,7 @@
     }
     .target-label { font-size: 13px; font-weight: 700; color: var(--navy); opacity: 0.7; }
     .target-pill {
+      display: inline-flex; align-items: center; gap: 8px;
       background: var(--burgundy); color: var(--cream);
       border: none; border-radius: 999px; padding: 6px 16px;
       font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 800;
@@ -244,18 +245,12 @@
       box-shadow: 0 2px 6px rgba(114,47,55,0.3); transition: transform 0.12s;
     }
     .target-pill:active { transform: scale(0.94); }
-    .target-pill .target-value { font-size: 15px; margin-left: 4px; }
-    .target-presets { display: flex; gap: 4px; }
-    .target-preset {
-      background: rgba(26,39,68,0.06); color: var(--navy);
-      border: 1px solid rgba(26,39,68,0.1); border-radius: 999px;
-      padding: 4px 10px; font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700;
-      cursor: pointer; min-height: 30px;
+    .target-pill .target-value {
+      font-size: 16px; font-weight: 900; color: var(--gold);
+      padding: 0 2px; border-bottom: 1.5px dashed rgba(201,162,39,0.6);
     }
-    .target-preset.active { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+    .target-pill .target-edit-icon { width: 14px; height: 14px; opacity: 0.8; }
     [data-theme="dark"] .target-label { color: var(--cream); }
-    [data-theme="dark"] .target-preset { background: rgba(245,240,230,0.06); border-color: rgba(245,240,230,0.12); color: var(--cream); }
-    [data-theme="dark"] .target-preset.active { background: var(--gold); color: var(--navy); border-color: var(--gold); }
     .player-score-card {
       background: rgba(26,39,68,0.04); border-radius: 12px; padding: 10px;
       text-align: center;
@@ -855,19 +850,13 @@
       }
     }
 
-    var TARGET_PRESETS = [500, 1000, 1500, 2000];
     function renderTargetRow() {
       var row = document.getElementById('targetRow');
       if (!row) return;
-      var html = '<button class="target-pill" onclick="editTarget()" aria-label="تعديل الهدف">' +
-        '<span>الهدف</span><span class="target-value">' + toAr(state.target) + '</span>' +
-        '</button><div class="target-presets">';
-      TARGET_PRESETS.forEach(function(v) {
-        var active = v === state.target ? ' active' : '';
-        html += '<button class="target-preset' + active + '" onclick="setTarget(' + v + ')">' + toAr(v) + '</button>';
-      });
-      html += '</div>';
-      row.innerHTML = html;
+      row.innerHTML = '<button class="target-pill" onclick="editTarget()" aria-label="تعديل الهدف">' +
+        '<span>اللعب من</span><span class="target-value">' + toAr(state.target) + '</span>' +
+        '<svg class="target-edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
+        '</button>';
     }
 
     function setTarget(v) {
