@@ -338,6 +338,11 @@
     .round-type-badge.hind { background: rgba(114,47,55,0.12); color: var(--burgundy); }
     .round-type-badge.ful { background: rgba(201,162,39,0.15); color: var(--gold-text); }
     .round-type-badge.super { background: rgba(26,39,68,0.15); color: var(--navy); }
+    .round-winner-name {
+      font-size: 11px; font-weight: 700; color: var(--gold-text);
+      max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    [data-theme="dark"] .round-winner-name { color: var(--gold); }
     .round-scores { display: flex; flex: 1; gap: 2px; justify-content: space-around; }
     .round-score-cell { flex: 1; text-align: center; font-weight: 600; color: var(--navy); }
     .round-score-cell.winner { color: var(--gold-text); }
@@ -1010,8 +1015,11 @@
       var html = '';
       state.rounds.forEach(function(round, ri) {
         var maxScore = Math.max.apply(null, round.scores);
+        var winnerName = state.players[round.winner] || '';
         html += '<div class="round-row"><span class="round-num">' + toAr(ri + 1) + '</span>' +
-          '<span class="round-type-badge ' + round.ending + '">' + (round.ending === 'hind' ? 'هند' : (round.ending === 'super' ? 'سوبر' : 'خالص')) + '</span><div class="round-scores">';
+          '<span class="round-type-badge ' + round.ending + '">' + (round.ending === 'hind' ? 'هند' : (round.ending === 'super' ? 'سوبر' : 'خالص')) + '</span>' +
+          '<span class="round-winner-name">' + escHtml(winnerName) + '</span>' +
+          '<div class="round-scores">';
         round.scores.forEach(function(s, si) {
           var cls = '';
           if (si === round.winner) cls = ' winner';
