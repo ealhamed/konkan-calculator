@@ -4,10 +4,9 @@ Standalone Konkan card-game score tracker PWA — sibling to sibeet and baloot c
 
 ## Stack
 - Single-file PWA (`index.html`)
-- PeerJS v1.5.4 for P2P multiplayer (host ↔ viewers, star topology)
-- Firebase Realtime Database as scaling fallback when PeerJS broker is unavailable
+- Firebase Realtime Database for shared rooms (host broadcasts state, viewers mirror)
 - QRCode.js for room QR codes
-- Service Worker (`sw.js`, cache `konkan-v3`) for offline caching
+- Service Worker (`sw.js`, cache `konkan-v18`) for offline caching
 - Al Dewaniah visual identity (burgundy #722F37 / gold #C9A227 / navy #1A2744 / cream #F5F0E6, Cairo font)
 
 ## Commands
@@ -48,10 +47,12 @@ https://ealhamed.github.io/konkan-calculator/
 - No separate setup screen — app boots directly into the game with 4 default players
 
 ### Multiplayer (Room System)
-- **PeerJS mode** (default): host generates 4-digit code, viewers scan QR or enter code; star-topology, ~8 viewer soft cap
-- **Firebase mode** (auto-fallback): on PeerJS broker error, app silently switches to Firebase RTDB with `F-XXXX` code prefix, removing viewer cap
-- **Viewers are read-only** — host's device is the single source of truth. No "allow editing" toggle (removed; the fallback makes per-session opt-in unnecessary)
-- State sync via `getStatePayload()` broadcasting players/rounds/totals/target
+- **Firebase-only**: host generates a 4-char code, viewers scan QR or enter the code. No viewer cap beyond Firebase quota.
+- State model: `rooms/{code}` holds `state`, `editUnlocked`, `presence/{id}`, and `messages/{id}` (viewer→host round pushes when edit unlocked)
+- Host writes full state on every broadcast; viewers mirror via `onValue`. `onDisconnect` removes room on host exit and presence entry on viewer exit.
+- **Viewers are read-only** by default — host can toggle edit-unlock to let viewers push rounds
+- Legacy `F-XXXX` prefix is still stripped on join for URL compatibility, but new codes are plain 4-char
+- State sync via `getStatePayload()` broadcasting players/rounds/totals/target/teams
 
 ### Firebase Project
 - Project ID: `konkan-calculator-al-dew` (each calculator has its own Firebase project for isolated 100-concurrent quota)
