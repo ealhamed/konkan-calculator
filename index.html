@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="#722F37">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#1C1C1E">
   <title>كنكان - الديوانية</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -14,19 +14,19 @@
   <style>@font-face { font-family: 'Cairo'; font-display: swap; }</style>
   <style>
     :root {
-      --bg: #F5F0E6;
-      --burgundy: #722F37;
-      --gold: #C9A227;
-      --navy: #1A2744;
-      --text: #1D1E20;
-      --cream: #F5F0E6;
-      --gold-text: #8B7318;
+      --bg: #F5F5F7;
+      --burgundy: #1C1C1E;
+      --gold: #FFB800;
+      --navy: #1C1C1E;
+      --text: #1C1C1E;
+      --cream: #F5F5F7;
+      --gold-text: #A87000;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { background: var(--bg); min-height: 100%; }
     html.no-scroll, html.no-scroll body { overflow: hidden; height: 100%; }
-    [data-theme="dark"] html { background: #0F1923; }
+    [data-theme="dark"] html { background: #000000; }
 
     body {
       font-family: 'Cairo', sans-serif;
@@ -387,9 +387,10 @@
 
     /* ── Dark Mode ── */
     [data-theme="dark"] {
-      --bg: #0F1923; --text: #E8E2D6; --cream: #E8E2D6;
+      --bg: #000000; --text: #F5F5F7; --cream: #F5F5F7;
+      --burgundy: #1C1C1E; --gold: #FFB800; --gold-text: #FFB800; --navy: #F5F5F7;
     }
-    [data-theme="dark"] body { background: #0F1923; color: #E8E2D6; }
+    [data-theme="dark"] body { background: #000000; color: #F5F5F7; }
     [data-theme="dark"] .ending-toggle { background: rgba(245,240,230,0.1); border-color: rgba(245,240,230,0.15); color: var(--cream); }
     [data-theme="dark"] .player-score-card { background: rgba(245,240,230,0.06); }
     [data-theme="dark"] .player-score-name { color: var(--gold); }
@@ -402,9 +403,9 @@
     [data-theme="dark"] .round-score-cell { color: var(--cream); }
     [data-theme="dark"] .player-setup-row { background: rgba(245,240,230,0.06); }
     [data-theme="dark"] .player-setup-input { color: var(--cream); }
-    [data-theme="dark"] .app-dialog { background: #1A2744; }
+    [data-theme="dark"] .app-dialog { background: #1C1C1E; }
     [data-theme="dark"] .app-dialog-input { background: rgba(245,240,230,0.06); border-color: rgba(245,240,230,0.1); color: var(--cream); }
-    [data-theme="dark"] .side-menu { background: #0F1923; box-shadow: -4px 0 20px rgba(0,0,0,0.4); }
+    [data-theme="dark"] .side-menu { background: #000000; box-shadow: -4px 0 20px rgba(0,0,0,0.4); }
     [data-theme="dark"] .game-over-overlay { background: rgba(0,0,0,0.85); }
     [data-theme="dark"] .burger-btn { background: rgba(245,240,230,0.1); color: var(--cream); }
     [data-theme="dark"] .add-player-btn { border-color: rgba(245,240,230,0.15); color: var(--cream); }
@@ -1157,7 +1158,7 @@
       var joinUrl = window.location.href.split('?')[0] + '?room=' + roomCode;
       var qrBox = document.getElementById('qrBox'); qrBox.innerHTML = '';
       var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      new QRCode(qrBox, { text: joinUrl, width: 160, height: 160, colorDark: isDark ? '#E8E4DC' : '#1A2744', colorLight: isDark ? '#1A1A2E' : '#F5F0E6', correctLevel: QRCode.CorrectLevel.M });
+      new QRCode(qrBox, { text: joinUrl, width: 160, height: 160, colorDark: isDark ? '#F5F5F7' : '#1C1C1E', colorLight: isDark ? '#000000' : '#F5F5F7', correctLevel: QRCode.CorrectLevel.M });
       document.getElementById('connectedCount').textContent = 'جاري الاتصال...';
       pushOverlay('roomModal');
       document.getElementById('roomModal').style.display = 'flex';
@@ -1275,7 +1276,7 @@
       var joinUrl = getJoinUrl();
       var qrBox = document.getElementById('qrBox'); qrBox.innerHTML = '';
       var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      new QRCode(qrBox, { text: joinUrl, width: 160, height: 160, colorDark: isDark ? '#E8E4DC' : '#1A2744', colorLight: isDark ? '#1A1A2E' : '#F5F0E6', correctLevel: QRCode.CorrectLevel.M });
+      new QRCode(qrBox, { text: joinUrl, width: 160, height: 160, colorDark: isDark ? '#F5F5F7' : '#1C1C1E', colorLight: isDark ? '#000000' : '#F5F5F7', correctLevel: QRCode.CorrectLevel.M });
       pushOverlay('roomModal');
       document.getElementById('roomModal').style.display = 'flex';
     }
