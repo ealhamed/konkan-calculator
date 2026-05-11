@@ -62,7 +62,7 @@ https://ealhamed.github.io/konkan-calculator/
 ### Shared Features (parity with sibeet/baloot)
 - `appConfirm()` / `appPrompt()` custom dialogs
 - `pushOverlay()` + popstate for back-button integration
-- Auto-dim overlay after 15s idle
+- Auto-dim overlay after 30s idle
 - Dark mode with SVG moon/sun toggle
 - Haptic feedback (`navigator.vibrate`) on submit, toggles, undo
 - iOS Safari bottom-strip fix (`html { background: var(--bg); min-height: 100% }`)
