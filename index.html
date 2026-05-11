@@ -269,6 +269,15 @@
     }
     .card-remove-btn svg { width: 12px; height: 12px; }
     .card-remove-btn:active { opacity: 1; }
+    .card-penalty-btn {
+      position: absolute; left: -4px; top: -4px;
+      background: rgba(114,47,55,0.12); color: var(--burgundy);
+      border: none; height: 22px; min-width: 38px; padding: 0 8px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cairo', sans-serif; font-size: 11px; font-weight: 800;
+      cursor: pointer; line-height: 1;
+    }
+    .card-penalty-btn:active { background: var(--burgundy); color: var(--cream); }
     .player-score-total { font-size: 22px; font-weight: 700; color: var(--navy); line-height: 1.1; margin-bottom: 2px; }
     .ending-toggles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-bottom: 4px; }
     .ending-toggle {
@@ -340,6 +349,7 @@
     .round-type-badge.hind { background: rgba(114,47,55,0.12); color: var(--burgundy); }
     .round-type-badge.ful { background: rgba(201,162,39,0.15); color: var(--gold-text); }
     .round-type-badge.super { background: rgba(26,39,68,0.15); color: var(--navy); }
+    .round-type-badge.penalty { background: rgba(114,47,55,0.12); color: var(--burgundy); }
     .round-winner-name {
       font-size: 11px; font-weight: 700; color: var(--gold-text);
       max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -410,6 +420,9 @@
     [data-theme="dark"] .burger-btn { background: rgba(245,240,230,0.1); color: var(--cream); }
     [data-theme="dark"] .add-player-btn { border-color: rgba(245,240,230,0.15); color: var(--cream); }
     [data-theme="dark"] .undo-btn { color: var(--gold); border-color: rgba(201,162,39,0.2); }
+    [data-theme="dark"] .card-penalty-btn { background: rgba(245,240,230,0.08); color: var(--gold); }
+    [data-theme="dark"] .card-penalty-btn:active { background: var(--gold); color: #000; }
+    [data-theme="dark"] .round-type-badge.penalty { background: rgba(201,162,39,0.18); color: var(--gold); }
   </style>
 </head>
 <body>
@@ -871,6 +884,17 @@
       if (name) { state.players[i] = name; saveState(); render(); broadcastState(); }
     }
 
+    async function penalizePlayer(i) {
+      if (isWriteBlocked()) return;
+      if (!(await appConfirm('عقوبة ٢٥ على ' + state.players[i] + '؟'))) return;
+      var scores = state.players.map(function(_, j) { return j === i ? 25 : 0; });
+      state.rounds.push({ ending: 'penalty', winner: -1, penalized: i, scores: scores });
+      state.totals[i] += 25;
+      saveState();
+      if (typeof navigator.vibrate === 'function') navigator.vibrate([10, 30, 10]);
+      render(); broadcastState();
+    }
+
     async function undoLastRound() {
       if (isWriteBlocked()) return;
       if (state.rounds.length === 0) return;
@@ -948,7 +972,8 @@
       var canRemove = !state.teamsMode && state.players.length > 2;
       var h = '<div class="' + (wrapperClass || 'player-score-card') + (isWinner ? ' is-winner' : '') + dangerCls + '">';
       var removeBtn = canRemove ? '<button class="card-remove-btn" onclick="event.stopPropagation();removePlayerMidGame(' + i + ')" aria-label="حذف اللاعب"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' : '';
-      h += '<div class="player-score-name-wrap">' + removeBtn + '<div class="player-score-name" onclick="renamePlayer(' + i + ')">' + escHtml(name) + '</div></div>';
+      var penaltyBtn = '<button class="card-penalty-btn" onclick="event.stopPropagation();penalizePlayer(' + i + ')" aria-label="عقوبة ٢٥ على ' + escHtml(name) + '">+٢٥</button>';
+      h += '<div class="player-score-name-wrap">' + penaltyBtn + removeBtn + '<div class="player-score-name" onclick="renamePlayer(' + i + ')">' + escHtml(name) + '</div></div>';
       h += '<div class="player-score-total">' + toAr(total) + '</div>';
       if (!state.teamsMode) {
         h += '<div class="player-score-bar"><div class="player-score-bar-fill" style="width:' + pct + '%"></div></div>';
@@ -1072,9 +1097,12 @@
       var html = '';
       state.rounds.forEach(function(round, ri) {
         var maxScore = Math.max.apply(null, round.scores);
-        var winnerName = state.players[round.winner] || '';
+        var isPenalty = round.ending === 'penalty';
+        var nameIdx = isPenalty ? round.penalized : round.winner;
+        var winnerName = (typeof nameIdx === 'number' && nameIdx >= 0) ? (state.players[nameIdx] || '') : '';
+        var badgeText = round.ending === 'hind' ? 'هند' : (round.ending === 'super' ? 'سوبر' : (isPenalty ? 'عقوبة' : 'خالص'));
         html += '<div class="round-row"><span class="round-num">' + toAr(ri + 1) + '</span>' +
-          '<span class="round-type-badge ' + round.ending + '">' + (round.ending === 'hind' ? 'هند' : (round.ending === 'super' ? 'سوبر' : 'خالص')) + '</span>' +
+          '<span class="round-type-badge ' + round.ending + '">' + badgeText + '</span>' +
           '<span class="round-winner-name">' + escHtml(winnerName) + '</span>' +
           '<div class="round-scores">';
         round.scores.forEach(function(s, si) {
